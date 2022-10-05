@@ -17,10 +17,11 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - DATA_DIR=/tmp/localstack/data
 
+# Database storage
   postgres:
     image: postgres:14
     volumes:
-      - "db-data:/var/lib/postgresql/data"
+      - "postgres-data-vol:/var/lib/postgresql/data"
       - "./postgres:/docker-entrypoint-initdb.d/"
 
     ports:
@@ -31,6 +32,6 @@ services:
       - POSTGRES_DB=postgres
 
 volumes:
-  db-data:
+  postgres-data-vol:
     driver: local
   localstack-vol:
