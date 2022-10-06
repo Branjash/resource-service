@@ -6,48 +6,50 @@ import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.s3.S3ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.List;
 
 @Service
 public class ResourceService {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
+    private final ResourceRepository resourceRepository;
+    private final S3ClientService s3Client;
 
-    @Autowired
-    private ResourceRepository resourceRepository;
-
-    @Autowired
-    private S3ClientService s3Client;
+    public ResourceService(ResourceRepository resourceRepository, S3ClientService s3Client) {
+        this.resourceRepository = resourceRepository;
+        this.s3Client = s3Client;
+    }
 
     public Resource saveResource(MultipartFile file) throws ResourceS3Exception, IOException {
-        Resource resource = new Resource(file.getName());
+        Resource resource = new Resource(file.getOriginalFilename());
         resource = resourceRepository.save(resource);
-        s3Client.putObject(file.getBytes(),String.valueOf(resource.getId()));
+        s3Client.createResourceInStorage(file.getBytes(),String.valueOf(resource.getId()));
         return resource;
     }
 
-    public byte[] getResourceById(Long id) throws ResourceNotFoundException {
-        return s3Client.getObjectBytes(String.valueOf(id));
+    public ResponseEntity<?> getResourceById(Long id) throws ResourceNotFoundException {
+        Resource resource = resourceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource does not exist with given id!"));
+        ResponseBytes<GetObjectResponse> s3ResourceBytes = s3Client.getResourceFromStorage(String.valueOf(resource.getId()));
+        return ResourceUtility.createResponseForGetResource(s3ResourceBytes,resource);
     }
 
-    public void deleteResources(List<Long> ids) {
+    public void deleteResources(List<Long> ids) throws ResourceS3Exception {
         resourceRepository.deleteAllById(ids);
-        ids.forEach(this::deleteFromStorage);
+        s3Client.deleteResourceFromStorage(ids);
     }
 
-    private void deleteFromStorage(Long id) {
-        try {
-            s3Client.deleteObject(String.valueOf(id));
-        } catch (ResourceS3Exception e) {
-            logger.error(String.format("Error deleting file from storage, id: %s",e.getMessage()));
-        }
-    }
+
 
 }

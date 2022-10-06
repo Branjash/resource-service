@@ -13,12 +13,12 @@ public class Resource {
     private long id;
 
     @JsonIgnore
-    private String location;
+    private String name;
 
     public Resource() {}
 
-    public Resource(String location) {
-        this.location = location;
+    public Resource(String name) {
+        this.name = name;
     }
 
     public long getId() {
@@ -29,19 +29,19 @@ public class Resource {
         this.id = id;
     }
 
-    public String getLocation() {
-        return location;
+    public String getName() {
+        return name;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setName(String fileName) {
+        this.name = fileName;
     }
 
     @Override
     public String toString() {
         return "Resource{" +
                 "id=" + id +
-                ", location='" + location + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
+import java.util.List;
 
 @Component
 public class S3ClientService {
@@ -38,67 +39,73 @@ public class S3ClientService {
 
     @PostConstruct
     private void initClient() {
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(this.accessKey, this.secretKey);
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(this.accessKey, this.secretKey);
         this.s3Client = S3Client.builder()
                 .region(Region.US_EAST_1)
-                .endpointOverride(URI.create(url))
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .endpointOverride(URI.create(this.url))
+                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
 
     }
 
     // Get the byte[] from this Amazon S3 object.
-    public byte[] getObjectBytes(String keyName) throws ResourceNotFoundException {
+    public ResponseBytes<GetObjectResponse> getResourceFromStorage(String objectKey) throws ResourceNotFoundException {
         try {
-            GetObjectRequest objectRequest = GetObjectRequest
-                    .builder()
-                    .key(keyName)
-                    .bucket(S3_BUCKET_NAME)
-                    .build();
-
-            ResponseBytes<GetObjectResponse> objectBytes = this.s3Client.getObjectAsBytes(objectRequest);
-            byte[] data = objectBytes.asByteArray();
-            return data;
-
+            return this.s3Client.getObjectAsBytes(buildGetObjectRequest(objectKey));
         } catch (S3Exception e) {
             logger.error(e.awsErrorDetails().errorMessage());
-            throw new ResourceNotFoundException("Resource doesn’t exist with given id");
+            throw new ResourceNotFoundException("Resource does not exist with given id");
         }
     }
 
-    // Places an image into a S3 bucket.
-    public String putObject(byte[] data, String objectKey) throws ResourceS3Exception {
-
+    public void createResourceInStorage(byte[] data, String objectKey) throws ResourceS3Exception {
         try {
-            PutObjectResponse response = this.s3Client.putObject(PutObjectRequest.builder()
-                            .bucket(S3_BUCKET_NAME)
-                            .key(objectKey)
-                            .build(),
-                    RequestBody.fromBytes(data));
-
-            return response.eTag();
-
+            putObject(data,objectKey);
         } catch (S3Exception e) {
             logger.error(e.getMessage());
             throw new ResourceS3Exception("Error putting data into s3 local cloud storage simulator!");
         }
     }
+    // Replaces the object in the bu
 
-    public String deleteObject(String objectKey) throws ResourceS3Exception {
-
+    public void deleteResourceFromStorage(List<Long> ids) throws ResourceS3Exception {
         try {
-            DeleteObjectResponse response = this.s3Client.deleteObject(DeleteObjectRequest.builder()
-                    .bucket(S3_BUCKET_NAME)
-                    .key(objectKey)
-                    .build());
-
-            return objectKey;
-
+            ids.stream().map(id -> String.valueOf(id)).forEach(this::deleteObject);
         } catch (S3Exception e) {
             logger.error(e.getMessage());
             throw new ResourceS3Exception("Error deleting data from s3 local cloud storage simulator!");
         }
     }
 
+    private GetObjectRequest buildGetObjectRequest(String objectKey) {
+        return GetObjectRequest
+                .builder()
+                .key(objectKey)
+                .bucket(S3_BUCKET_NAME)
+                .build();
+    }
+
+    private void putObject(byte[] data, String objectKey) {
+        this.s3Client.putObject(buildPutObjectRequest(objectKey),RequestBody.fromBytes(data));
+    }
+
+    private PutObjectRequest buildPutObjectRequest(String objectKey) {
+        return PutObjectRequest.builder()
+                .bucket(S3_BUCKET_NAME)
+                .key(objectKey)
+                .build();
+    }
+
+    private String deleteObject(String objectKey) {
+        this.s3Client.deleteObject(buildDeleteObjectRequest(objectKey));
+        return objectKey;
+    }
+
+    private DeleteObjectRequest buildDeleteObjectRequest(String objectKey) {
+        return DeleteObjectRequest.builder()
+                .bucket(S3_BUCKET_NAME)
+                .key(objectKey)
+                .build();
+    }
 
 }
