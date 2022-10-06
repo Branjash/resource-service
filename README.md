@@ -12,3 +12,18 @@ Check if files are added/removed to/from the storage after triggering the REST e
 ```bash
 awslocal s3 ls resource-service-bucket --recursive --human-readable --summarize
 ```
+NOTE! 
+Add `config` and `credentials` file to local `~/.aws` folder
+  
+  - config:
+    ```properties
+    [default]
+    region = us-east-1
+    ```
+  - credentials:
+    ```properties
+    [default]
+    aws_access_key_id = test
+    aws_secret_access_key = test
+
+    ```
