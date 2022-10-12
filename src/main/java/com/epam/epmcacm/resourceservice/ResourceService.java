@@ -4,25 +4,18 @@ import com.epam.epmcacm.resourceservice.exceptions.ResourceNotFoundException;
 import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.s3.S3ClientService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+
 import java.util.List;
 
 @Service
 public class ResourceService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
     private final ResourceRepository resourceRepository;
     private final S3ClientService s3Client;
 
@@ -38,7 +31,7 @@ public class ResourceService {
         return resource;
     }
 
-    public ResponseEntity<?> getResourceById(Long id) throws ResourceNotFoundException {
+    public ResponseEntity<ByteArrayResource> getResourceById(Long id) throws ResourceNotFoundException {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource does not exist with given id!"));
         ResponseBytes<GetObjectResponse> s3ResourceBytes = s3Client.getResourceFromStorage(String.valueOf(resource.getId()));
@@ -47,7 +40,7 @@ public class ResourceService {
 
     public void deleteResources(List<Long> ids) throws ResourceS3Exception {
         resourceRepository.deleteAllById(ids);
-        s3Client.deleteResourceFromStorage(ids);
+        s3Client.deleteResourcesFromStorage(ids);
     }
 
 

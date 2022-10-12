@@ -1,6 +1,5 @@
 package com.epam.epmcacm.resourceservice;
 
-import com.epam.epmcacm.resourceservice.exceptions.ResourceNotFoundException;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +10,11 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 public class ResourceUtility {
 
-    public static ResponseEntity<?> createResponseForGetResource(ResponseBytes<GetObjectResponse> responseBytes, Resource resource) throws ResourceNotFoundException {
+    private ResourceUtility() {
+        throw new IllegalStateException("Utility class!");
+    }
+
+    public static ResponseEntity<ByteArrayResource> createResponseForGetResource(ResponseBytes<GetObjectResponse> responseBytes, Resource resource){
         GetObjectResponse responseObject = responseBytes.response();
         ByteArrayResource byteResource = new ByteArrayResource(responseBytes.asByteArray());
         return ResponseEntity.ok()
