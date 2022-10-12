@@ -14,17 +14,13 @@ import software.amazon.awssdk.services.s3.model.Bucket;
 @Order(0)
 class MyApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
 
-  private static final Logger logger = LoggerFactory.getLogger(MyApplicationListener.class);
 
   @Autowired
   S3ClientService s3ClientService;
 
   @Override
   public void onApplicationEvent(ApplicationReadyEvent event) {
-    Bucket s3Bucket = s3ClientService.getResourceBucketAndCreateIfNotExists();
-    String bucketName = s3Bucket.name();
-    String bucketLogMessage = String.format("Finished creating bucket: %s", bucketName);
-    logger.info(bucketLogMessage);
+    s3ClientService.getResourceBucketAndCreateIfNotExists();
   }
 
 }
