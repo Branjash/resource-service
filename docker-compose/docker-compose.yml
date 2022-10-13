@@ -16,12 +16,15 @@ services:
       - AWS_DEFAULT_REGION=us-east-1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - DATA_DIR=/tmp/localstack/data
+    networks:
+      - resource-network
 
 # Database storage
   postgres:
+    container_name: postgres_db
     image: postgres:14
     volumes:
-      - "postgres-data-vol:/var/lib/postgresql/data"
+      - "postgres-resource-service-vol:/var/lib/postgresql/data"
       - "./postgres:/docker-entrypoint-initdb.d/"
 
     ports:
@@ -30,8 +33,15 @@ services:
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
+    networks:
+      - resource-network
 
 volumes:
-  postgres-data-vol:
+  postgres-resource-service-vol:
     driver: local
   localstack-vol:
+
+networks:
+  resource-network:
+    external: true
+    driver: bridge

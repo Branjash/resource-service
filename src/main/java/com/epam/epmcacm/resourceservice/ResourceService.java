@@ -6,6 +6,7 @@ import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.s3.S3ClientService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
@@ -16,9 +17,9 @@ import java.util.List;
 
 @Service
 public class ResourceService {
+
     private final ResourceRepository resourceRepository;
     private final S3ClientService s3Client;
-
     public ResourceService(ResourceRepository resourceRepository, S3ClientService s3Client) {
         this.resourceRepository = resourceRepository;
         this.s3Client = s3Client;
