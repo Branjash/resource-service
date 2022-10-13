@@ -5,6 +5,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,17 +24,20 @@ import java.util.Map;
 @EnableKafka
 public class KafkaProducer {
 
-    public static final String TOPIC_RESOURCES = "resource-topic";
-
     final KafkaProperties kafkaProperties;
 
     public KafkaProducer(KafkaProperties kafkaProperties) {
         this.kafkaProperties = kafkaProperties;
     }
 
+    @Value("${resource.kafka.topic}")
+    private String topic;
+    @Value("${resource.kafka.host}")
+    private String host;
+
     @Bean
     public KafkaAdmin admin() {
-        return new KafkaAdmin(Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"));
+        return new KafkaAdmin(Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, host));
     }
     @Bean
     public Map<String, Object> producerConfiguration() {
@@ -55,7 +59,7 @@ public class KafkaProducer {
 
     @Bean
     public NewTopic topic() {
-        return TopicBuilder.name(TOPIC_RESOURCES)
+        return TopicBuilder.name(topic)
                 .partitions(1)
                 .replicas(1)
                 .build();
