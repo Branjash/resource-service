@@ -1,11 +1,11 @@
 package com.epam.epmcacm.resourceservice.s3;
 
 
-import com.epam.epmcacm.resourceservice.exceptions.ResourceNotFoundException;
 import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -58,7 +58,7 @@ public class S3ClientService {
         }
     }
 
-    public void createResourceInStorage(byte[] data, String objectKey) throws ResourceS3Exception {
+    public void createOrUpdateResourceInStorage(byte[] data, String objectKey) throws ResourceS3Exception {
         try {
             putObject(data,objectKey);
         } catch (S3Exception e) {
@@ -66,6 +66,8 @@ public class S3ClientService {
             throw new ResourceS3Exception("Error putting data into s3 local cloud storage simulator!");
         }
     }
+
+
     // Replaces the object in the bu
 
     public void deleteResourcesFromStorage(List<Long> ids) throws ResourceS3Exception {

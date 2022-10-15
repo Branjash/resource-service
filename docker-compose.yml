@@ -21,11 +21,11 @@ services:
 
 # Database storage
   postgres:
-    container_name: postgres_db
+    container_name: postgres_resource_service
     image: postgres:14
     volumes:
       - "postgres-resource-service-vol:/var/lib/postgresql/data"
-      - "./postgres:/docker-entrypoint-initdb.d/"
+      - "./docker-compose/postgres:/docker-entrypoint-initdb.d/"
 
     ports:
       - "5432:5432"

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class Resource {
@@ -20,6 +19,11 @@ public class Resource {
     public Resource() {}
 
     public Resource(String name) {
+        this.name = name;
+    }
+
+    public Resource(long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

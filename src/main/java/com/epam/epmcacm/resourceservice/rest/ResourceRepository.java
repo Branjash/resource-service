@@ -1,4 +1,4 @@
-package com.epam.epmcacm.resourceservice;
+package com.epam.epmcacm.resourceservice.rest;
 
 import com.epam.epmcacm.resourceservice.model.Resource;
 import org.springframework.data.repository.CrudRepository;
