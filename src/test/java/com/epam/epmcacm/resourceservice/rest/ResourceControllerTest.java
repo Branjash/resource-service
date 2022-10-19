@@ -1,8 +1,9 @@
 package com.epam.epmcacm.resourceservice.rest;
 
 import com.epam.epmcacm.resourceservice.model.Resource;
+import com.epam.epmcacm.resourceservice.service.api.ResourceService;
+import com.epam.epmcacm.resourceservice.service.impl.ResourceServiceImpl;
 import com.epam.epmcacm.resourceservice.util.ResourceUtility;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
 

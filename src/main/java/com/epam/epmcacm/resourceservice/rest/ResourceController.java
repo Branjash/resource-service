@@ -2,20 +2,17 @@ package com.epam.epmcacm.resourceservice.rest;
 
 import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
+import com.epam.epmcacm.resourceservice.service.api.ResourceService;
+import com.epam.epmcacm.resourceservice.service.impl.ResourceServiceImpl;
 import com.epam.epmcacm.resourceservice.util.FileUtil;
 import com.epam.epmcacm.resourceservice.util.ResourceUtility;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.UnsupportedTagException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
