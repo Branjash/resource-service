@@ -6,6 +6,8 @@ import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.s3.S3ClientService;
 import com.mpatric.mp3agic.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -21,6 +23,8 @@ import java.util.List;
 
 @Service
 public class ResourceService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
 
     @Value("${resource.kafka.topic}")
     private String topic;
@@ -38,12 +42,14 @@ public class ResourceService {
         Resource resource = new Resource(file.getOriginalFilename());
         resource = resourceRepository.save(resource);
         s3Client.createOrUpdateResourceInStorage(file.getBytes(),String.valueOf(resource.getId()));
+        logger.info("Successfully save resource data: {}", resource);
         return resource;
     }
 
     public Resource sendResourceKafkaEvent(Resource resource) {
         String resourceId = String.valueOf(resource.getId());
         kafka.send(topic, resourceId, resource);
+        logger.info("Successfully sent kafka event with key: {} of resource upload finish", resourceId);
         return resource;
     }
 
@@ -51,8 +57,9 @@ public class ResourceService {
         Resource currentResource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource does not exist with given id!"));
         currentResource.setName(file.getOriginalFilename());
-        resourceRepository.save(currentResource);
+        currentResource = resourceRepository.save(currentResource);
         s3Client.createOrUpdateResourceInStorage(file.getBytes(), String.valueOf(currentResource.getId()));
+        logger.info("Successfully updated resource: {}", currentResource);
         return currentResource;
     }
 
@@ -60,12 +67,14 @@ public class ResourceService {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource does not exist with given id!"));
         ResponseBytes<GetObjectResponse> s3ResourceBytes = s3Client.getResourceFromStorage(String.valueOf(resource.getId()));
+        logger.info("Successfully found resource with id {}", id);
         return ResourceUtility.createResponseForGetResource(s3ResourceBytes,resource);
     }
 
     public void deleteResources(List<Long> ids) throws ResourceS3Exception {
         resourceRepository.deleteAllById(ids);
         s3Client.deleteResourcesFromStorage(ids);
+        logger.info("Successfully deleted resources with ids: {}", ids);
     }
 
 
