@@ -22,11 +22,11 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
-public class KafkaProducer {
+public class KafkaProducerConfiguration {
 
     final KafkaProperties kafkaProperties;
 
-    public KafkaProducer(KafkaProperties kafkaProperties) {
+    public KafkaProducerConfiguration(KafkaProperties kafkaProperties) {
         this.kafkaProperties = kafkaProperties;
     }
 

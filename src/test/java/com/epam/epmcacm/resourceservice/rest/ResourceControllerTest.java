@@ -83,7 +83,6 @@ public class ResourceControllerTest {
 
     @Test
     public void deleteResourceTest_success() throws Exception {
-        List<Long> ids = Arrays.asList(new Long[]{1l});
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/resources?id=1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,11 +95,11 @@ public class ResourceControllerTest {
     }
 
     private MockMultipartFile createMockMultipartFile() {
-        String fileName = "sampleFile.txt";
+        String fileName = "sampleFile.mp3";
         MockMultipartFile sampleFile = new MockMultipartFile(
                 "file",
                 fileName,
-                "text/plain",
+                "audio/mpeg",
                 "This is the file content".getBytes()
         );
         return sampleFile;
