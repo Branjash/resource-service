@@ -2,11 +2,11 @@
 ## Implements REST API CRUD service for files. Used for data storing. Service uses  cloud-based storage emulation (S3 bucket with localstack - running aws locally). Service tracks resources (with resource location) in the postgresql database
 
 - To enable simulated s3 bucket storage for files. Run docker-compose file from root docker-compose folder.
-- Once docker containers are running for localstack and postgres, create s3 bucket for resource service and file storage for resource service to use
+- (Optional) Once docker containers are running for localstack and postgres, create s3 bucket for resource service and file storage for resource service to use
 ```bash
 awslocal s3 mb s3://resource-service-bucket
 ```
-- UPDATE: add automatic bucket creation on app startup (if it doesn't exist) so creating bucket manually is optional now
+- If skiped, bucket will be created automatically on app startup, if it doesn't exist
 
 
 Check if files are added/removed to/from the storage after triggering the REST endpoints
