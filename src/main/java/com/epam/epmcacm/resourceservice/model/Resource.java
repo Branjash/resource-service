@@ -13,7 +13,7 @@ public class Resource {
     @JsonProperty
     private long id;
 
-    @JsonIgnore
+    @JsonProperty
     private String name;
 
     public Resource() {}

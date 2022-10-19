@@ -53,7 +53,7 @@ public class ResourceControllerTest {
     public void saveResourceTest_success() throws Exception {
         MockMultipartFile sampleFile = createMockMultipartFile();
 
-        Mockito.when(resourceService.saveResource(sampleFile)).thenReturn(RESOURCE);
+        Mockito.when(resourceService.saveResourceAndSendEvent(sampleFile)).thenReturn(RESOURCE);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/resources")
