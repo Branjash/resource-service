@@ -3,10 +3,15 @@ package com.epam.epmcacm.resourceservice.util;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResourceUtility {
 
@@ -31,6 +36,12 @@ public class ResourceUtility {
         responseHeaders.add("Pragma", "no-cache");
         responseHeaders.add("Expires", "0");
         return responseHeaders;
+    }
+
+    public static ResponseEntity<?> singlePropertyOkResponse(@NonNull String key, @NonNull Object value) {
+        Map<String,Object> result = new HashMap<>();
+        result.put(key, value);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

@@ -3,6 +3,7 @@ package com.epam.epmcacm.resourceservice.rest;
 import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.util.FileUtil;
+import com.epam.epmcacm.resourceservice.util.ResourceUtility;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class ResourceController {
             FileUtil.validateMultipartRequest(file);
             Resource resource = resourceService.saveResource(file);
             resourceService.sendResourceKafkaEvent(resource);
-            return singlePropertyOkResponse("id", resource.getId());
+            return ResourceUtility.singlePropertyOkResponse("id", resource.getId());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected I/0 error");
         } catch (ResourceS3Exception e) {
@@ -42,7 +43,7 @@ public class ResourceController {
         try {
             FileUtil.validateMultipartRequest(file);
             Resource resource = resourceService.updateResource(id,file);
-            return singlePropertyOkResponse("id", resource.getId());
+            return ResourceUtility.singlePropertyOkResponse("id", resource.getId());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected I/0 error");
         } catch (ResourceS3Exception e) {
@@ -59,17 +60,11 @@ public class ResourceController {
     public ResponseEntity<?> deleteResourcesWithIds(@RequestParam("id") List<Long> ids) {
         try {
             resourceService.deleteResources(ids);
-            return singlePropertyOkResponse("ids",ids);
+            return ResourceUtility.singlePropertyOkResponse("ids",ids);
         } catch (ResourceS3Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected s3 storage delete error!");
 
         }
-    }
-
-    private ResponseEntity<?> singlePropertyOkResponse(@NonNull String key,@NonNull Object value) {
-        Map<String,Object> result = new HashMap<>();
-        result.put(key, value);
-        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }
