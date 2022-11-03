@@ -16,6 +16,10 @@ Add `config` and `credentials` file to local `~/.aws` folder (requires `aws-cli/
     aws_secret_access_key = test
     ```
 
+- Create common docker network for all services, if not previously
+```bash
+docker network create resource-network
+```
 - To enable simulated s3 bucket storage for files. Run docker-compose file from root docker-compose folder.
 - (Optional) Once docker containers are running for localstack and postgres, create s3 bucket for resource service and file storage for resource service to use
 ```bash
