@@ -10,10 +10,13 @@ import org.springframework.lang.NonNull;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ResourceUtility {
+
+    public static final String MOCK_FILE_NAME = "Sample.mp3";
 
     private ResourceUtility() {
         throw new IllegalStateException("Utility class!");
@@ -43,5 +46,7 @@ public class ResourceUtility {
         result.put(key, value);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
 
 }

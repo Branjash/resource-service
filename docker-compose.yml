@@ -3,10 +3,7 @@ version: '3.6'
 services:
 #  AWS Cloud storage simulation
   localstack:
-    container_name: localstack
     image: localstack/localstack:latest
-    ports:
-      - "4566:4566"
     volumes:
       - "localstack-vol:/tmp/localstack/data"
     environment:
@@ -20,19 +17,50 @@ services:
       - resource-network
 
 # Database storage
-  postgres:
-    container_name: postgres_resource_service
+  postgres-resources:
     image: postgres:14
     volumes:
       - "postgres-resource-service-vol:/var/lib/postgresql/data"
       - "./docker-compose/postgres:/docker-entrypoint-initdb.d/"
 
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=postgres
+    networks:
+      - resource-network
+
+# Configuration manager server
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - resource-network
+
+# Kafka messaging broker for async communication
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+    networks:
+      - resource-network
+
+# Resource service for file manipulation
+  resource-service:
+    image: resource-service-local-image
+    ports:
+      - "8081:8081"
+    depends_on:
+      - localstack
+      - postgres-resources
+      - kafka
     networks:
       - resource-network
 

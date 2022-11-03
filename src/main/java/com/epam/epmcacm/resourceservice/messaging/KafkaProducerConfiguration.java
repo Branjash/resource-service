@@ -31,9 +31,9 @@ public class KafkaProducerConfiguration {
     }
 
     @Value("${resource.kafka.topic}")
-    private String topic;
-    @Value("${resource.kafka.host}")
-    private String host;
+    String topic;
+    @Value("${spring.kafka.bootstrap-servers}")
+    String host;
 
     @Bean
     public KafkaAdmin admin() {

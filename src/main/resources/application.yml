@@ -1,0 +1,53 @@
+app-config:
+  port: 8081
+  localstack-address: http://localstack:4566
+  postgres-address: postgres-resources:5432
+  kafka-address: kafka:9092
+  kafka-group-id: resource-group
+
+server:
+  port: ${app-config.port}
+
+spring:
+  application:
+    name: resource-service
+
+  kafka:
+    bootstrap-servers: ${app-config.kafka-address}
+    producer:
+      group-id: ${app-config.kafka-group-id}
+
+  #Postgresql Connection settings
+  datasource:
+    url: jdbc:postgresql://${app-config.postgres-address}/resources
+    username: test
+    password: password
+
+  #JPA properties
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQL81Dialect
+  
+  # Multipart config
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+  
+  # AWS S3 bucket
+amazonProperties:
+  accessKey: test
+  secretKey: test
+  url: ${app-config.localstack-address}
+  
+  # Kafka
+resource:
+  kafka:
+    topic: resource-topic

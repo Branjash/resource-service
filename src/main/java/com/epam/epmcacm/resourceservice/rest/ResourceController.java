@@ -1,5 +1,6 @@
 package com.epam.epmcacm.resourceservice.rest;
 
+import com.epam.epmcacm.resourceservice.exceptions.InvalidResourceException;
 import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.service.api.ResourceService;

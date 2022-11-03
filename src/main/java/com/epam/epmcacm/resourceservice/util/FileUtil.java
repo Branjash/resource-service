@@ -26,14 +26,10 @@ public class FileUtil {
     }
 
     public static void validateMultipartRequest(MultipartFile file) throws InvalidResourceException {
-        System.out.println(file.getContentType());
-        if (file == null)
-            throw new InvalidResourceException("No file sent in request!");
-        if (file.getOriginalFilename().isEmpty() || file.getOriginalFilename().isBlank())
-            throw new InvalidResourceException("File has inappropriate name!");
+        if (file.getOriginalFilename().isEmpty()) throw new InvalidResourceException(InvalidResourceException.EMPTY_FILE_MESSAGE);
+        if(file.getOriginalFilename().isBlank()) throw new InvalidResourceException(InvalidResourceException.BLANK_FILE_MESSAGE);
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if(!fileExtension.equals("mp3"))
-            throw new InvalidResourceException("File is not of type mp3!");
+        if(!fileExtension.equals("mp3")) throw new InvalidResourceException(InvalidResourceException.WRONG_FILE_TYPE_MESSAGE);
     }
 
 
