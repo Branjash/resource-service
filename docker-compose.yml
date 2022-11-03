@@ -1,6 +1,20 @@
 version: '3.6'
 
 services:
+
+#  All services configuration server
+  service-configurations:
+    image: service-configurations-local-image
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - resource-network
+
 #  AWS Cloud storage simulation
   localstack:
     image: localstack/localstack:latest
@@ -58,8 +72,7 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - localstack
-      - postgres-resources
+      - service-configurations
       - kafka
     networks:
       - resource-network
