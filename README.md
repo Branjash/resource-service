@@ -8,7 +8,7 @@
 
  **Prerequisites**:
  
-  - `aws-cli/awslocal' to be installed
+  - `aws-cli/awslocal` to be installed
   - Docker engine installed
   - `docker-compose` app installed
   - OPTIONAL: local `maven` installed, embeded wrapped can be used instead
