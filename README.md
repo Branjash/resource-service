@@ -52,7 +52,13 @@
    docker build -t resource-service-local-image .
    ```
      
-6. After checking that the image is properly built and ready, start `songs-service` and it's corresponding `postgresql` database container.
+6. After checking that the image is properly built and ready, start `resource-service` and it's corresponding docker containers <br>
+   (check `docker-compose` file from the project):
+   - [service-configuration-server](https://github.com/Branjash/services-configuration-server) - ! **important for all other services** !!
+   - Localstack - aws cloud local simulation
+   - Postgres 
+   - Zookeper
+   - Kafka
    ```bash
    docker-compose up -d
    ```
