@@ -16,6 +16,9 @@ public class Resource {
     @JsonProperty
     private String name;
 
+    @JsonProperty
+    private Long storageId;
+
     public Resource() {}
 
     public Resource(String name) {
@@ -31,8 +34,12 @@ public class Resource {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public Long getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(Long storageId) {
+        this.storageId = storageId;
     }
 
     public String getName() {
@@ -48,6 +55,7 @@ public class Resource {
         return "Resource{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", storageId='" + storageId + '\'' +
                 '}';
     }
 }

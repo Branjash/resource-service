@@ -1,10 +1,8 @@
 package com.epam.epmcacm.resourceservice.rest;
 
-import com.epam.epmcacm.resourceservice.exceptions.InvalidResourceException;
 import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import com.epam.epmcacm.resourceservice.service.api.ResourceService;
-import com.epam.epmcacm.resourceservice.service.impl.ResourceServiceImpl;
 import com.epam.epmcacm.resourceservice.util.FileUtil;
 import com.epam.epmcacm.resourceservice.util.ResourceUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -30,9 +29,9 @@ public class ResourceController {
             resourceService.sendResourceKafkaEvent(resource);
             return ResourceUtility.singlePropertyOkResponse("id", resource.getId());
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected I/0 error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (ResourceS3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected s3 storage save error!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -43,9 +42,9 @@ public class ResourceController {
             Resource resource = resourceService.updateResource(id,file);
             return ResourceUtility.singlePropertyOkResponse("id", resource.getId());
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected I/0 error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (ResourceS3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected s3 storage save error!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -60,7 +59,7 @@ public class ResourceController {
             resourceService.deleteResources(ids);
             return ResourceUtility.singlePropertyOkResponse("ids",ids);
         } catch (ResourceS3Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected s3 storage delete error!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 
         }
     }

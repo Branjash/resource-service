@@ -2,34 +2,6 @@ version: '3.6'
 
 services:
 
-#  All services configuration server
-  service-configurations:
-    image: service-configurations-local-image
-    ports:
-      - "8888:8888"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8888" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - resource-network
-
-#  AWS Cloud storage simulation
-  localstack:
-    image: localstack/localstack:latest
-    volumes:
-      - "localstack-vol:/tmp/localstack/data"
-    environment:
-      - DEBUG=1
-      - LOCALSTACK_HOSTNAME=localhost
-      - TEST_AWS_ACCOUNT_ID=test
-      - AWS_DEFAULT_REGION=us-east-1
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - DATA_DIR=/tmp/localstack/data
-    networks:
-      - resource-network
-
 # Database storage
   postgres-resources:
     image: postgres:14
@@ -44,43 +16,21 @@ services:
     networks:
       - resource-network
 
-# Configuration manager server
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      - resource-network
-
-# Kafka messaging broker for async communication
-  kafka:
-    image: wurstmeister/kafka
-    ports:
-      - "9092:9092"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
-    networks:
-      - resource-network
-
 # Resource service for file manipulation
   resource-service:
     image: resource-service-local-image
+    build:
+      dockerfile: Dockerfile
     ports:
       - "8081:8081"
     depends_on:
-      - service-configurations
-      - kafka
+      - postgres-resources
     networks:
       - resource-network
 
 volumes:
   postgres-resource-service-vol:
     driver: local
-  localstack-vol:
 
 networks:
   resource-network:

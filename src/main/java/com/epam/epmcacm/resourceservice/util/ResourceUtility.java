@@ -1,18 +1,17 @@
 package com.epam.epmcacm.resourceservice.util;
 
+import com.epam.epmcacm.resourceservice.exceptions.ResourceS3Exception;
 import com.epam.epmcacm.resourceservice.model.Resource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class ResourceUtility {
 
@@ -22,15 +21,6 @@ public class ResourceUtility {
         throw new IllegalStateException("Utility class!");
     }
 
-    public static ResponseEntity<ByteArrayResource> createResponseForGetResource(ResponseBytes<GetObjectResponse> responseBytes, Resource resource){
-        GetObjectResponse responseObject = responseBytes.response();
-        ByteArrayResource byteResource = new ByteArrayResource(responseBytes.asByteArray());
-        return ResponseEntity.ok()
-                .headers(createResponseHeadersForResourceDownload(resource.getName()))
-                .contentLength(responseObject.contentLength())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(byteResource);
-    }
 
     public static HttpHeaders createResponseHeadersForResourceDownload(String fileName) {
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -47,6 +37,11 @@ public class ResourceUtility {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-
+    public static Long saveInStorageAndGetId(MultipartFile file, Function<MultipartFile, ResponseEntity<?>> storageServiceCall) throws ResourceS3Exception {
+        ResponseEntity<?> result = storageServiceCall.apply(file);
+        if(result.getStatusCode() != HttpStatus.OK) throw new ResourceS3Exception("Error trying to create S3 resource successfully!");
+        if(!result.hasBody()) throw new ResourceS3Exception("There is no id after creating file in storage service!");
+        return ((Integer) ((Map<String,Object>) result.getBody()).get("id")).longValue();
+    }
 
 }

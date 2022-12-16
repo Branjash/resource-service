@@ -1,7 +1,6 @@
 package com.epam.epmcacm.resourceservice.rest;
 
 import com.epam.epmcacm.resourceservice.model.Resource;
-import com.epam.epmcacm.resourceservice.s3.S3ClientService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,6 @@ public class ResourceServiceTest {
 
     @MockBean
     ResourceRepository resourceRepository;
-
-    @MockBean
-    S3ClientService s3Client;
 
     List<Path> filesToBeDeleted = new ArrayList<>();
 
